@@ -1,0 +1,67 @@
+package calculeese.main.scanner
+
+import calculeese.main.scanner.Token.*
+import calculeese.main.scanner.Token.FactorOpr.*
+import calculeese.main.scanner.Token.TermOpr.*
+import java.io.File
+import java.util.*
+import kotlin.system.exitProcess
+
+class Scanner(filename: String) {
+
+    private val input  = File(filename).bufferedReader().lines().iterator()
+    private val tokens = LinkedList<Token>()
+
+    fun curToken(): Token {
+        while (tokens.isEmpty()) readLine()
+        return tokens.peekFirst()
+    }
+
+    fun nextToken(): Token {
+        while (tokens.isEmpty()) readLine()
+        return tokens.removeFirst()
+    }
+
+    private fun readLine() =
+        if (!input.hasNext())
+            tokens.push(Eof)
+        else
+            tokenize(input.next())
+
+    private fun tokenize(s: String) {
+        var i = 0
+        while (i < s.length) {
+            val (token, offset) = when (s[i]) {
+                ' ' ,
+                '\t',
+                '\r' -> null    to 1
+                '\n' -> Newline to 1
+                '+'  -> Plus    to 1
+                '-'  -> Minus   to 1
+                '*'  -> Mult    to 1
+                '/'  -> Div     to 1
+                '='  -> Eq      to 1
+                in '0' .. '9' -> scanIntLit(s, i)
+                else          -> scannerError("Unrecognized Symbol: ${s[i]}")
+            }
+            if (token != null) tokens.push(token)
+            i += offset
+        }
+        tokens.push(Newline)
+    }
+
+    fun scanIntLit(s: String, i: Int): Pair<Token, Int> {
+        var x = i
+        var result = ""
+        while (s[x] in '0' .. '9') {
+            result += s[x++]
+            if (x >= s.length) break
+        }
+        return IntLit(result.toInt()) to x-i
+    }
+
+    private fun scannerError(msg: String = "Yikes!"): Nothing {
+        println("Scanner Error:\n$msg")
+        exitProcess(-1)
+    }
+}
