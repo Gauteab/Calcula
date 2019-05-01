@@ -30,12 +30,13 @@ class Scanner(filename: String) {
 
     private fun tokenize(s: String) {
         var i = 0
+        if (s.isBlank() || s.isEmpty()) return
         while (i < s.length) {
             val (token, offset) = when (s[i]) {
                 ' ' ,
                 '\t',
                 '\r' -> null    to 1
-                '\n' -> Newline to 1
+                //'\n' -> Newline to 1
                 '+'  -> Plus    to 1
                 '-'  -> Minus   to 1
                 '*'  -> Mult    to 1
@@ -44,10 +45,10 @@ class Scanner(filename: String) {
                 in '0' .. '9' -> scanIntLit(s, i)
                 else          -> scannerError("Unrecognized Symbol: ${s[i]}")
             }
-            if (token != null) tokens.push(token)
+            if (token != null) tokens.addLast(token)
             i += offset
         }
-        tokens.push(Newline)
+        tokens.addLast(Newline)
     }
 
     fun scanIntLit(s: String, i: Int): Pair<Token, Int> {
