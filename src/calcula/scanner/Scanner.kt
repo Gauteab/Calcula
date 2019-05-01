@@ -1,8 +1,8 @@
-package calculeese.main.scanner
+package calcula.scanner
 
-import calculeese.main.scanner.Token.*
-import calculeese.main.scanner.Token.FactorOpr.*
-import calculeese.main.scanner.Token.TermOpr.*
+import calcula.scanner.Token.*
+import calcula.scanner.Token.FactorOpr.*
+import calcula.scanner.Token.TermOpr.*
 import java.io.File
 import java.util.*
 import kotlin.system.exitProcess

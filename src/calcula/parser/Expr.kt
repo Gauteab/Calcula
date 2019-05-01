@@ -1,11 +1,11 @@
-package calculeese.main.parser
+package calcula.parser
 
-import calculeese.main.parser.Expr.*
-import calculeese.main.parser.Expr.Atom.*
-import calculeese.main.scanner.Scanner
-import calculeese.main.scanner.Token
-import calculeese.main.scanner.Token.FactorOpr
-import calculeese.main.scanner.Token.TermOpr
+import calcula.parser.Expr.*
+import calcula.parser.Expr.Atom.*
+import calcula.scanner.Scanner
+import calcula.scanner.Token
+import calcula.scanner.Token.FactorOpr
+import calcula.scanner.Token.TermOpr
 import kotlin.system.exitProcess
 
 
@@ -23,7 +23,7 @@ sealed class Expr {
 
 fun parseTerm(s: Scanner): Term = log {
     val factors = mutableListOf<Factor>()
-    val oprs    = mutableListOf<TermOpr>()
+    val oprs = mutableListOf<TermOpr>()
     while (true) {
         factors += parseFactor(s)
         if (s.curToken() !is TermOpr) break
@@ -35,17 +35,17 @@ fun parseTerm(s: Scanner): Term = log {
 fun parseTermOpr(s: Scanner): TermOpr = log {
     when (s.curToken()) {
         is TermOpr -> s.nextToken() as TermOpr
-        else       -> expectedError("{+, -}", s.curToken().toString())
+        else -> expectedError("{+, -}", s.curToken().toString())
     }
 }
 
 fun parseFactor(s: Scanner): Factor = log {
     val atoms = mutableListOf<Atom>()
-    val oprs  = mutableListOf<FactorOpr>()
+    val oprs = mutableListOf<FactorOpr>()
     while (true) {
         atoms += parseAtom(s)
         if (s.curToken() !is FactorOpr) break
-        oprs  += parseFactorOpr(s)
+        oprs += parseFactorOpr(s)
     }
     Factor(atoms, oprs)
 }
@@ -53,15 +53,15 @@ fun parseFactor(s: Scanner): Factor = log {
 fun parseFactorOpr(s: Scanner): FactorOpr = log {
     when (s.curToken()) {
         is FactorOpr -> s.nextToken() as FactorOpr
-        else         -> expectedError("{*, /}", s.curToken().toString())
+        else -> expectedError("{*, /}", s.curToken().toString())
     }
 }
 
 fun parseAtom(s: Scanner): Atom = log {
     when (val t = s.nextToken()) {
-        is Token.IntLit  -> IntExpr(t.value)
+        is Token.IntLit -> IntExpr(t.value)
         is Token.LeftPar -> parseInnerExpr(s)
-        else             -> expectedError("Atom", t.toString())
+        else -> expectedError("Atom", t.toString())
     }
 }
 

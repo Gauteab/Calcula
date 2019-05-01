@@ -1,4 +1,4 @@
-package calculeese.main.scanner
+package calcula.scanner
 
 sealed class Token {
 
