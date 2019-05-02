@@ -6,8 +6,9 @@ import calcula.parser.parseTerm
 import calcula.scanner.Scanner
 import calcula.scanner.Token
 
-fun main() {
-    val filename = "calc/mini.cal"
+fun main(args: Array<String>) {
+    val filename = args.firstOrNull() ?: "calc/mini.cal"
+    listOf<String>().drop(1)
     //testParser(filename)
     testCompiler(filename)
 }
@@ -20,6 +21,8 @@ fun testCompiler(filename: String) {
     println("main:")
     val term = parseTerm(s)
     term.compile()
+
+    println()
     println("mov  rdi, fmt")
     println("mov  rsi, rax")
     println("xor  rax, rax")

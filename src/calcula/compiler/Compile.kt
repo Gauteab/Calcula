@@ -1,9 +1,7 @@
 package calcula.compiler
 
-import calcula.parser.Expr
 import calcula.parser.Expr.*
 import calcula.parser.Expr.Atom.IntExpr
-import calcula.scanner.Token
 import calcula.scanner.Token.FactorOpr
 import calcula.scanner.Token.FactorOpr.*
 import calcula.scanner.Token.TermOpr
@@ -40,7 +38,7 @@ fun Atom.compile() {
 }
 
 fun Term.compile() {
-    factors.first().compile()
+    factors[0].compile()
     factors.drop(1).zip(oprs).forEach { (factor, opr) ->
         println("push rax")
         factor.compile()
