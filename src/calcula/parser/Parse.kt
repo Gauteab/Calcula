@@ -1,8 +1,27 @@
 package calcula.parser
 
+import calcula.LOG
 import calcula.scanner.Scanner
 import calcula.scanner.Token
 import kotlin.system.exitProcess
+
+fun parseExpr(s: Scanner) = parseComparison(s)
+
+fun parseComparison(s: Scanner): Expr.Comparison = log {
+    val terms = mutableListOf<Expr.Term>()
+    val oprs  = mutableListOf<Token.Eq>()
+    while (true) {
+        terms += parseTerm(s)
+        if (s.curToken() !is Token.Eq) break
+        oprs += parseCompOpr(s)
+    }
+    Expr.Comparison(terms, oprs)
+}
+
+fun parseCompOpr(s: Scanner): Token.Eq = log {
+    if (s.curToken() !is Token.Eq) expectedError("-", s.curToken().toString())
+    s.nextToken() as Token.Eq
+}
 
 fun parseTerm(s: Scanner): Expr.Term = log {
     val factors = mutableListOf<Expr.Factor>()
@@ -65,12 +84,11 @@ fun Scanner.skip(token1: Token, token2: Token) {
 }
 
 var indent = 0
-var LOG = false
-inline fun <reified T> log(name: String = T::class.simpleName!!, block: () -> T): T {
+inline fun <reified T> log(name: String = T::class.simpleName ?: "<T::class.simpleName>", block: () -> T): T {
     if (!LOG) return block()
-    println("${"  ".repeat(indent++)}<$name>")
+    println("${"   ".repeat(indent++)}<$name>")
     val t = block()
-    println("${"  ".repeat(--indent)}</$name>")
+    println("${"   ".repeat(--indent)}</$name>")
     return t
 }
 

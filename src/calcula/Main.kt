@@ -2,15 +2,17 @@ package calcula
 
 import calcula.compiler.compile
 import calcula.parser.Expr
+import calcula.parser.parseExpr
 import calcula.parser.parseTerm
 import calcula.scanner.Scanner
 import calcula.scanner.Token
 
+var LOG = false
+
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
-    listOf<String>().drop(1)
-    //testParser(filename)
-    testCompiler(filename)
+    testParser(filename)
+    //testCompiler(filename)
 }
 
 fun testCompiler(filename: String) {
@@ -32,8 +34,9 @@ fun testCompiler(filename: String) {
 }
 
 fun testParser(filename: String) {
+    LOG = true
     val s = Scanner(filename)
-    val e: Expr = parseTerm(s)
+    val e: Expr = parseExpr(s)
     println(e)
 }
 
