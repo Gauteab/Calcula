@@ -11,8 +11,8 @@ var LOG = false
 
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
-    testParser(filename)
-    //testCompiler(filename)
+    //testParser(filename)
+    testCompiler(filename)
 }
 
 fun testCompiler(filename: String) {
@@ -21,7 +21,7 @@ fun testCompiler(filename: String) {
     println("  extern printf")
     println("  section .text")
     println("main:")
-    val term = parseTerm(s)
+    val term = parseExpr(s)
     term.compile()
 
     println()

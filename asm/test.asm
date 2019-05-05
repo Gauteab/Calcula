@@ -2,12 +2,17 @@
   extern printf
   section .text
 main:
+
 mov  rax, 2
-push rax
-mov  rax, 4
-mov  rcx, rax
-pop  rax
-imul rax, rcx
+mov  rcx, 3
+
+cmp  rax, rcx
+pushf
+pop rax
+shr  rax, 6
+and rax, 1
+
+# Post
 mov  rdi, fmt
 mov  rsi, rax
 xor  rax, rax

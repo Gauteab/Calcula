@@ -2,10 +2,11 @@ package calcula.compiler
 
 import calcula.parser.Expr.*
 import calcula.parser.Expr.Atom.IntExpr
-import calcula.scanner.Token.FactorOpr
+import calcula.scanner.Token
+import calcula.scanner.Token.*
 import calcula.scanner.Token.FactorOpr.*
-import calcula.scanner.Token.TermOpr
 import calcula.scanner.Token.TermOpr.*
+
 
 fun TermOpr.compile() {
     val cmd = when (this) {
@@ -35,6 +36,28 @@ fun Atom.compile() {
         is IntExpr -> compile()
         else       -> TODO()
     }
+}
+
+fun Comparison.compile() {
+    terms[0].compile()
+    terms.drop(1).zip(oprs).forEach { (term, opr) ->
+        println("push rax")
+        term.compile()
+        opr.compile()
+    }
+}
+
+fun Eq.compile() {
+    println("mov  rcx, rax")
+    println("pop  rax")
+    println(
+"""
+cmp rax, rcx
+pushf
+pop  rax
+shr rax, 6
+and rax, 1
+""")
 }
 
 fun Term.compile() {
