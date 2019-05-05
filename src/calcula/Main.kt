@@ -1,5 +1,6 @@
 package calcula
 
+import calcula.compiler.Asm
 import calcula.compiler.compile
 import calcula.parser.Expr
 import calcula.parser.parseExpr
@@ -15,22 +16,22 @@ fun main(args: Array<String>) {
     testCompiler(filename)
 }
 
-fun testCompiler(filename: String) {
-    val s = Scanner(filename)
-    println("  global main")
-    println("  extern printf")
-    println("  section .text")
-    println("main:")
-    val term = parseExpr(s)
-    term.compile()
-
-    println()
-    println("mov  rdi, fmt")
-    println("mov  rsi, rax")
-    println("xor  rax, rax")
-    println("call printf")
-    println("ret")
-    println("""fmt: db `%d\n`, 0""")
+fun testCompiler(filename: String) = Asm().run {
+    global("main")
+    extern("printf")
+    section("text")
+    label("main")
+    parseExpr(Scanner(filename)).compile(this)
+    nl()
+    mov("rdi", "format")
+    mov("rsi", "rax")
+    xor("rax")
+    call("printf")
+    ret()
+    nl()
+    section("data")
+    data("format", "db", "\"%d\", 10, 0")
+    println(this)
 }
 
 fun testParser(filename: String) {

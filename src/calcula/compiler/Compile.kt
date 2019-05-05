@@ -2,78 +2,73 @@ package calcula.compiler
 
 import calcula.parser.Expr.*
 import calcula.parser.Expr.Atom.IntExpr
-import calcula.scanner.Token
 import calcula.scanner.Token.*
 import calcula.scanner.Token.FactorOpr.*
 import calcula.scanner.Token.TermOpr.*
 
+fun Asm.getRaxFromStack() = mov("rcx", "rax").pop("rax")
 
-fun TermOpr.compile() {
-    val cmd = when (this) {
-        Plus  -> "add "
-        Minus -> "sub "
-    }
-    println("mov  rcx, rax")
-    println("pop  rax")
-    println("$cmd rax, rcx")
+fun TermOpr.compile(asm: Asm) {
+    asm.getRaxFromStack()
+    when (this) {
+        Plus  -> Asm::add
+        Minus -> Asm::sub
+    }(asm, "rax", "rcx")
 }
 
-fun FactorOpr.compile() {
-    println("mov  rcx, rax")
-    println("pop  rax")
+fun FactorOpr.compile(asm: Asm) {
+    asm.getRaxFromStack()
     when (this) {
-        Mult -> println("imul rax, rcx")
+        Mult -> asm.imul("rax", "rcx")
         else -> TODO()
     }
 }
 
-fun IntExpr.compile() {
-    println("mov  rax, $value")
+fun IntExpr.compile(asm: Asm) {
+    asm.mov("rax", "$value")
 }
 
-fun Atom.compile() {
+fun Atom.compile(asm: Asm) {
     when (this) {
-        is IntExpr -> compile()
+        is IntExpr -> compile(asm)
         else       -> TODO()
     }
 }
 
-fun Comparison.compile() {
-    terms[0].compile()
+fun Comparison.compile(asm: Asm) {
+    terms[0].compile(asm)
     terms.drop(1).zip(oprs).forEach { (term, opr) ->
-        println("push rax")
-        term.compile()
-        opr.compile()
+        asm.push("rax")
+        term.compile(asm)
+        opr.compile(asm)
     }
 }
 
-fun Eq.compile() {
-    println("mov  rcx, rax")
-    println("pop  rax")
-    println(
-"""
-cmp rax, rcx
-pushf
-pop  rax
-shr rax, 6
-and rax, 1
-""")
-}
+fun Asm.flagIntoRax(flag: Int) =
+    pushf()
+    .pop("rax")
+    .shr("rax", "$flag")
+    .and("rax", "1")
 
-fun Term.compile() {
-    factors[0].compile()
+fun Eq.compile(asm: Asm) = asm
+    .getRaxFromStack()
+    .cmp("rax", "rcx")
+    .flagIntoRax(6)
+
+fun Term.compile(asm: Asm) {
+    factors[0].compile(asm)
     factors.drop(1).zip(oprs).forEach { (factor, opr) ->
-        println("push rax")
-        factor.compile()
-        opr.compile()
+        asm.push("rax")
+        factor.compile(asm)
+        opr.compile(asm)
     }
 }
 
-fun Factor.compile() {
-    atoms[0].compile()
+fun Factor.compile(asm: Asm) {
+    atoms[0].compile(asm)
     atoms.drop(1).zip(oprs).forEach { (atom, opr) ->
-        println("push rax")
-        atom.compile()
-        opr.compile()
+        asm.push("rax")
+        atom.compile(asm)
+        opr.compile(asm)
     }
 }
