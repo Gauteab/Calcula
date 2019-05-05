@@ -5,69 +5,69 @@ import calcula.scanner.Scanner
 import calcula.scanner.Token
 import kotlin.system.exitProcess
 
-fun parseExpr(s: Scanner) = parseComparison(s)
+fun Scanner.parseExpr() = parseComparison()
 
-fun parseComparison(s: Scanner): Expr.Comparison = log {
+fun Scanner.parseComparison(): Expr.Comparison = log {
     val terms = mutableListOf<Expr.Term>()
     val oprs  = mutableListOf<Token.Eq>()
     while (true) {
-        terms += parseTerm(s)
-        if (s.curToken() !is Token.Eq) break
-        oprs += parseCompOpr(s)
+        terms += parseTerm()
+        if (curToken() !is Token.Eq) break
+        oprs += parseCompOpr()
     }
     Expr.Comparison(terms, oprs)
 }
 
-fun parseCompOpr(s: Scanner): Token.Eq = log {
-    if (s.curToken() !is Token.Eq) expectedError("-", s.curToken().toString())
-    s.nextToken() as Token.Eq
+fun Scanner.parseCompOpr(): Token.Eq = log {
+    if (curToken() !is Token.Eq) expectedError("-", curToken().toString())
+    nextToken() as Token.Eq
 }
 
-fun parseTerm(s: Scanner): Expr.Term = log {
+fun Scanner.parseTerm(): Expr.Term = log {
     val factors = mutableListOf<Expr.Factor>()
     val oprs = mutableListOf<Token.TermOpr>()
     while (true) {
-        factors += parseFactor(s)
-        if (s.curToken() !is Token.TermOpr) break
-        oprs += parseTermOpr(s)
+        factors += parseFactor()
+        if (curToken() !is Token.TermOpr) break
+        oprs += parseTermOpr()
     }
     Expr.Term(factors, oprs)
 }
 
-fun parseTermOpr(s: Scanner): Token.TermOpr = log {
-    when (s.curToken()) {
-        is Token.TermOpr -> s.nextToken() as Token.TermOpr
-        else -> expectedError("{+, -}", s.curToken().toString())
+fun Scanner.parseTermOpr(): Token.TermOpr = log {
+    when (curToken()) {
+        is Token.TermOpr -> nextToken() as Token.TermOpr
+        else -> expectedError("{+, -}", curToken().toString())
     }
 }
 
-fun parseFactor(s: Scanner): Expr.Factor = log {
+fun Scanner.parseFactor(): Expr.Factor = log {
     val atoms = mutableListOf<Expr.Atom>()
     val oprs = mutableListOf<Token.FactorOpr>()
     while (true) {
-        atoms += parseAtom(s)
-        if (s.curToken() !is Token.FactorOpr) break
-        oprs += parseFactorOpr(s)
+        atoms += parseAtom()
+        if (curToken() !is Token.FactorOpr) break
+        oprs += parseFactorOpr()
     }
     Expr.Factor(atoms, oprs)
 }
 
-fun parseFactorOpr(s: Scanner): Token.FactorOpr = log {
-    when (s.curToken()) {
-        is Token.FactorOpr -> s.nextToken() as Token.FactorOpr
-        else -> expectedError("{*, /}", s.curToken().toString())
+fun Scanner.parseFactorOpr(): Token.FactorOpr = log {
+    when (curToken()) {
+        is Token.FactorOpr -> nextToken() as Token.FactorOpr
+        else -> expectedError("{*, /}", curToken().toString())
     }
 }
 
-fun parseAtom(s: Scanner): Expr.Atom = log {
-    when (val t = s.nextToken()) {
+fun Scanner.parseAtom(): Expr.Atom = log {
+    when (val t = nextToken()) {
         is Token.IntLit -> Expr.Atom.IntExpr(t.value)
-        is Token.LeftPar -> parseInnerExpr(s)
+        is Token.LeftPar -> parseInnerExpr()
         else -> expectedError("Atom", t.toString())
     }
 }
 
-fun parseInnerExpr(s: Scanner): Expr.Atom.IntExpr {
+fun Scanner.parseInnerExpr(): Expr.Atom.IntExpr {
     TODO()
 }
 
@@ -84,7 +84,7 @@ fun Scanner.skip(token1: Token, token2: Token) {
 }
 
 var indent = 0
-inline fun <reified T> log(name: String = T::class.simpleName ?: "<T::class.simpleName>", block: () -> T): T {
+inline fun <reified T> log(name: String = T::class.simpleName ?: "<T::classimpleName>", block: () -> T): T {
     if (!LOG) return block()
     println("${"   ".repeat(indent++)}<$name>")
     val t = block()

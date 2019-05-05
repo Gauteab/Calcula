@@ -21,7 +21,7 @@ fun testCompiler(filename: String) = Asm().run {
     extern("printf")
     section("text")
     label("main")
-    parseExpr(Scanner(filename)).compile(this)
+    Scanner(filename).parseExpr().compile(this)
     nl()
     mov("rdi", "format")
     mov("rsi", "rax")
@@ -36,9 +36,10 @@ fun testCompiler(filename: String) = Asm().run {
 
 fun testParser(filename: String) {
     LOG = true
-    val s = Scanner(filename)
-    val e: Expr = parseExpr(s)
+    val e: Expr = Scanner(filename).parseExpr()
+    LOG = false
     println(e)
+    println()
 }
 
 fun testScanner(filename: String) {
