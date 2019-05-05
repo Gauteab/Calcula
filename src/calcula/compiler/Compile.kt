@@ -3,6 +3,7 @@ package calcula.compiler
 import calcula.parser.Expr.*
 import calcula.parser.Expr.Atom.IntExpr
 import calcula.scanner.Token.*
+import calcula.scanner.Token.CompOpr.*
 import calcula.scanner.Token.FactorOpr.*
 import calcula.scanner.Token.TermOpr.*
 
@@ -50,10 +51,13 @@ fun Asm.flagIntoRax(flag: Int) =
     .shr("rax", "$flag")
     .and("rax", "1")
 
-fun Eq.compile(asm: Asm) = asm
+fun CompOpr.compile(asm: Asm) = asm
     .getRaxFromStack()
     .cmp("rax", "rcx")
-    .flagIntoRax(6)
+    .flagIntoRax(when (this) {
+        Eq     -> 6
+        Lt, Gt -> 7
+    })
 
 fun Term.compile(asm: Asm) {
     factors[0].compile(asm)

@@ -1,6 +1,7 @@
 package calcula.scanner
 
 import calcula.scanner.Token.*
+import calcula.scanner.Token.CompOpr.*
 import calcula.scanner.Token.FactorOpr.*
 import calcula.scanner.Token.TermOpr.*
 import java.io.File
@@ -42,6 +43,8 @@ class Scanner(filename: String) {
                 '*'  -> Mult    to 1
                 '/'  -> Div     to 1
                 '='  -> Eq      to 1
+                '>'  -> Gt      to 1
+                '<'  -> Lt      to 1
                 in '0' .. '9' -> scanIntLit(s, i)
                 else          -> scannerError("Unrecognized Symbol: ${s[i]}")
             }

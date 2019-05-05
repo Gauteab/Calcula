@@ -9,18 +9,18 @@ fun Scanner.parseExpr() = parseComparison()
 
 fun Scanner.parseComparison(): Expr.Comparison = log {
     val terms = mutableListOf<Expr.Term>()
-    val oprs  = mutableListOf<Token.Eq>()
+    val oprs  = mutableListOf<Token.CompOpr>()
     while (true) {
         terms += parseTerm()
-        if (curToken() !is Token.Eq) break
+        if (curToken() !is Token.CompOpr) break
         oprs += parseCompOpr()
     }
     Expr.Comparison(terms, oprs)
 }
 
-fun Scanner.parseCompOpr(): Token.Eq = log {
-    if (curToken() !is Token.Eq) expectedError("-", curToken().toString())
-    nextToken() as Token.Eq
+fun Scanner.parseCompOpr(): Token.CompOpr = log {
+    if (curToken() !is Token.CompOpr) expectedError("-", curToken().toString())
+    nextToken() as Token.CompOpr
 }
 
 fun Scanner.parseTerm(): Expr.Term = log {

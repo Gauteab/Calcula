@@ -16,7 +16,12 @@ sealed class Token {
         object Mult  : FactorOpr()
         object Div   : FactorOpr()
     }
-    object Eq    : Token()
+
+    sealed class CompOpr : Token() {
+        object Eq : CompOpr()
+        object Lt : CompOpr()
+        object Gt : CompOpr()
+    }
 
     // Symbols
     object LeftPar  : Token()
