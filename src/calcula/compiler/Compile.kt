@@ -51,13 +51,17 @@ fun Asm.flagIntoRax(flag: Int) =
     .shr("rax", "$flag")
     .and("rax", "1")
 
-fun CompOpr.compile(asm: Asm) = asm
-    .getRaxFromStack()
-    .cmp("rax", "rcx")
-    .flagIntoRax(when (this) {
+fun CompOpr.compile(asm: Asm) = asm.run {
+    getRaxFromStack()
+    when (this@compile) {
+        is Eq, Lt -> asm.cmp("rax", "rcx")
+        is Gt     -> asm.cmp("rcx", "rax")
+    }
+    flagIntoRax(when (this@compile) {
         Eq     -> 6
         Lt, Gt -> 7
     })
+}
 
 fun Term.compile(asm: Asm) {
     factors[0].compile(asm)
