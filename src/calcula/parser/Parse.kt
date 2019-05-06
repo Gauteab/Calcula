@@ -29,36 +29,36 @@ fun Scanner.parseCompOpr(): CompOpr = log {
 
 fun Scanner.parseTerm(): Term = log {
     val factors = mutableListOf<Factor>()
-    val oprs = mutableListOf<Token.TermOpr>()
+    val oprs = mutableListOf<TermOpr>()
     while (true) {
         factors += parseFactor()
-        if (curToken() !is Token.TermOpr) break
+        if (curToken() !is TermOpr) break
         oprs += parseTermOpr()
     }
     Term(factors, oprs)
 }
 
-fun Scanner.parseTermOpr(): Token.TermOpr = log {
+fun Scanner.parseTermOpr(): TermOpr = log {
     when (curToken()) {
-        is Token.TermOpr -> nextToken() as Token.TermOpr
+        is TermOpr -> nextToken() as TermOpr
         else -> expectedError("{+, -}", curToken().toString())
     }
 }
 
 fun Scanner.parseFactor(): Factor = log {
     val atoms = mutableListOf<Atom>()
-    val oprs = mutableListOf<Token.FactorOpr>()
+    val oprs = mutableListOf<FactorOpr>()
     while (true) {
         atoms += parseAtom()
-        if (curToken() !is Token.FactorOpr) break
+        if (curToken() !is FactorOpr) break
         oprs += parseFactorOpr()
     }
     Factor(atoms, oprs)
 }
 
-fun Scanner.parseFactorOpr(): Token.FactorOpr = log {
+fun Scanner.parseFactorOpr(): FactorOpr = log {
     when (curToken()) {
-        is Token.FactorOpr -> nextToken() as Token.FactorOpr
+        is FactorOpr -> nextToken() as FactorOpr
         else -> expectedError("{*, /}", curToken().toString())
     }
 }
