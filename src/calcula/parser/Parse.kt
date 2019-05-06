@@ -6,7 +6,7 @@ import calcula.Ast.Expr.Atom.IntExpr
 import calcula.LOG
 import calcula.parser.scanner.Scanner
 import calcula.parser.scanner.Token
-import calcula.parser.scanner.Token.CompOpr
+import calcula.parser.scanner.Token.*
 import kotlin.system.exitProcess
 
 fun Scanner.parseExpr() = parseComparison()
@@ -65,16 +65,21 @@ fun Scanner.parseFactorOpr(): Token.FactorOpr = log {
 
 fun Scanner.parseAtom(): Atom = log {
     when (val t = curToken()) {
-        is Token.IntLit -> IntExpr(t.value)
-        is Token.LeftPar -> parseInnerExpr()
+        is IntLit -> parseIntLit(t)
+        is LeftPar -> parseInnerExpr()
         else -> expectedError("Atom", t.toString())
     }
 }
 
+fun Scanner.parseIntLit(token: IntLit): IntExpr = log {
+    nextToken()
+    IntExpr(token.value)
+}
+
 fun Scanner.parseInnerExpr(): InnerExpr = log {
-    skip(Token.LeftPar)
+    skip(LeftPar)
     val e = parseExpr()
-    skip(Token.RightPar)
+    skip(RightPar)
     InnerExpr(e)
 }
 
