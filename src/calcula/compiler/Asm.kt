@@ -13,6 +13,7 @@ class Asm {
     fun call(s: String)  = +"  call $s"
 
     fun imul(s1: String, s2: String) = +"  imul $s1, $s2"
+    fun idiv(s: String)              = +"  idiv $s"
     fun add (s1: String, s2: String) = +"  add  $s1, $s2"
     fun xor (s: String)              = +"  xor  $s, $s"
     fun xor (s1: String, s2: String) = +"  xor  $s1, $s2"

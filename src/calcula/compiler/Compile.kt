@@ -22,7 +22,10 @@ fun FactorOpr.compile(asm: Asm) {
     asm.getRaxFromStack()
     when (this) {
         Mult -> asm.imul("rax", "rcx")
-        else -> TODO()
+        Div  -> asm.run {
+            xor("rdx")
+            idiv("rcx")
+        }
     }
 }
 
