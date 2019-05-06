@@ -1,7 +1,8 @@
 package calcula.compiler
 
+import calcula.Ast.Expr
 import calcula.Ast.Expr.*
-import calcula.Ast.Expr.Atom.IntExpr
+import calcula.Ast.Expr.Atom.*
 import calcula.parser.scanner.Token.*
 import calcula.parser.scanner.Token.CompOpr.*
 import calcula.parser.scanner.Token.FactorOpr.*
@@ -29,12 +30,22 @@ fun IntExpr.compile(asm: Asm) {
     asm.mov("rax", "$value")
 }
 
-fun Atom.compile(asm: Asm) {
-    when (this) {
-        is IntExpr -> compile(asm)
-        else       -> TODO()
-    }
+fun Atom.compile(asm: Asm) = when (this) {
+    is IntExpr   -> compile(asm)
+    is BoolExpr  -> compile(asm)
+    is InnerExpr -> compile(asm)
 }
+
+fun Expr.compile(asm: Asm): Unit = when (this) {
+    is Comparison -> compile(asm)
+    is Term       -> compile(asm)
+    is Factor     -> compile(asm)
+    is Atom       -> compile(asm)
+}
+
+fun BoolExpr.compile(asm: Asm): Nothing = TODO()
+
+fun InnerExpr.compile(asm: Asm) = expr.compile(asm)
 
 fun Comparison.compile(asm: Asm) {
     terms[0].compile(asm)

@@ -1,6 +1,8 @@
 package calcula.parser
 
 import calcula.Ast.Expr.*
+import calcula.Ast.Expr.Atom.InnerExpr
+import calcula.Ast.Expr.Atom.IntExpr
 import calcula.LOG
 import calcula.parser.scanner.Scanner
 import calcula.parser.scanner.Token
@@ -21,7 +23,7 @@ fun Scanner.parseComparison(): Comparison = log {
 }
 
 fun Scanner.parseCompOpr(): CompOpr = log {
-    if (curToken() !is CompOpr) expectedError("-", curToken().toString())
+    if (curToken() !is CompOpr) expectedError("{=, <, >}", curToken().toString())
     nextToken() as CompOpr
 }
 
@@ -62,15 +64,18 @@ fun Scanner.parseFactorOpr(): Token.FactorOpr = log {
 }
 
 fun Scanner.parseAtom(): Atom = log {
-    when (val t = nextToken()) {
-        is Token.IntLit -> Atom.IntExpr(t.value)
+    when (val t = curToken()) {
+        is Token.IntLit -> IntExpr(t.value)
         is Token.LeftPar -> parseInnerExpr()
         else -> expectedError("Atom", t.toString())
     }
 }
 
-fun Scanner.parseInnerExpr(): Atom.IntExpr {
-    TODO()
+fun Scanner.parseInnerExpr(): InnerExpr = log {
+    skip(Token.LeftPar)
+    val e = parseExpr()
+    skip(Token.RightPar)
+    InnerExpr(e)
 }
 
 fun Scanner.skip(token: Token) {
@@ -86,7 +91,7 @@ fun Scanner.skip(token1: Token, token2: Token) {
 }
 
 var indent = 0
-inline fun <reified T> log(name: String = T::class.simpleName ?: "<T::classimpleName>", block: () -> T): T {
+inline fun <reified T> log(name: String = T::class.simpleName ?: "<T::class.simpleName>", block: () -> T): T {
     if (!LOG) return block()
     println("${"   ".repeat(indent++)}<$name>")
     val t = block()
