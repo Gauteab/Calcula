@@ -1,11 +1,11 @@
 package calcula.compiler
 
-import calcula.parser.Expr.*
-import calcula.parser.Expr.Atom.IntExpr
-import calcula.scanner.Token.*
-import calcula.scanner.Token.CompOpr.*
-import calcula.scanner.Token.FactorOpr.*
-import calcula.scanner.Token.TermOpr.*
+import calcula.Ast.Expr.*
+import calcula.Ast.Expr.Atom.IntExpr
+import calcula.parser.scanner.Token.*
+import calcula.parser.scanner.Token.CompOpr.*
+import calcula.parser.scanner.Token.FactorOpr.*
+import calcula.parser.scanner.Token.TermOpr.*
 
 fun Asm.getRaxFromStack() = mov("rcx", "rax").pop("rax")
 

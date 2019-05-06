@@ -1,4 +1,4 @@
-package calcula.scanner
+package calcula.parser.scanner
 
 sealed class Token {
 

@@ -2,11 +2,9 @@ package calcula
 
 import calcula.compiler.Asm
 import calcula.compiler.compile
-import calcula.parser.Expr
 import calcula.parser.parseExpr
-import calcula.parser.parseTerm
-import calcula.scanner.Scanner
-import calcula.scanner.Token
+import calcula.parser.scanner.Scanner
+import calcula.parser.scanner.Token
 
 var LOG = false
 
@@ -36,7 +34,7 @@ fun testCompiler(filename: String) = Asm().run {
 
 fun testParser(filename: String) {
     LOG = true
-    val e: Expr = Scanner(filename).parseExpr()
+    val e: Ast.Expr = Scanner(filename).parseExpr()
     LOG = false
     println(e)
     println()

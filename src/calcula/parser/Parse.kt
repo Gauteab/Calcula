@@ -1,37 +1,39 @@
 package calcula.parser
 
+import calcula.Ast.Expr.*
 import calcula.LOG
-import calcula.scanner.Scanner
-import calcula.scanner.Token
+import calcula.parser.scanner.Scanner
+import calcula.parser.scanner.Token
+import calcula.parser.scanner.Token.CompOpr
 import kotlin.system.exitProcess
 
 fun Scanner.parseExpr() = parseComparison()
 
-fun Scanner.parseComparison(): Expr.Comparison = log {
-    val terms = mutableListOf<Expr.Term>()
-    val oprs  = mutableListOf<Token.CompOpr>()
+fun Scanner.parseComparison(): Comparison = log {
+    val terms = mutableListOf<Term>()
+    val oprs  = mutableListOf<CompOpr>()
     while (true) {
         terms += parseTerm()
-        if (curToken() !is Token.CompOpr) break
+        if (curToken() !is CompOpr) break
         oprs += parseCompOpr()
     }
-    Expr.Comparison(terms, oprs)
+    Comparison(terms, oprs)
 }
 
-fun Scanner.parseCompOpr(): Token.CompOpr = log {
-    if (curToken() !is Token.CompOpr) expectedError("-", curToken().toString())
-    nextToken() as Token.CompOpr
+fun Scanner.parseCompOpr(): CompOpr = log {
+    if (curToken() !is CompOpr) expectedError("-", curToken().toString())
+    nextToken() as CompOpr
 }
 
-fun Scanner.parseTerm(): Expr.Term = log {
-    val factors = mutableListOf<Expr.Factor>()
+fun Scanner.parseTerm(): Term = log {
+    val factors = mutableListOf<Factor>()
     val oprs = mutableListOf<Token.TermOpr>()
     while (true) {
         factors += parseFactor()
         if (curToken() !is Token.TermOpr) break
         oprs += parseTermOpr()
     }
-    Expr.Term(factors, oprs)
+    Term(factors, oprs)
 }
 
 fun Scanner.parseTermOpr(): Token.TermOpr = log {
@@ -41,15 +43,15 @@ fun Scanner.parseTermOpr(): Token.TermOpr = log {
     }
 }
 
-fun Scanner.parseFactor(): Expr.Factor = log {
-    val atoms = mutableListOf<Expr.Atom>()
+fun Scanner.parseFactor(): Factor = log {
+    val atoms = mutableListOf<Atom>()
     val oprs = mutableListOf<Token.FactorOpr>()
     while (true) {
         atoms += parseAtom()
         if (curToken() !is Token.FactorOpr) break
         oprs += parseFactorOpr()
     }
-    Expr.Factor(atoms, oprs)
+    Factor(atoms, oprs)
 }
 
 fun Scanner.parseFactorOpr(): Token.FactorOpr = log {
@@ -59,15 +61,15 @@ fun Scanner.parseFactorOpr(): Token.FactorOpr = log {
     }
 }
 
-fun Scanner.parseAtom(): Expr.Atom = log {
+fun Scanner.parseAtom(): Atom = log {
     when (val t = nextToken()) {
-        is Token.IntLit -> Expr.Atom.IntExpr(t.value)
+        is Token.IntLit -> Atom.IntExpr(t.value)
         is Token.LeftPar -> parseInnerExpr()
         else -> expectedError("Atom", t.toString())
     }
 }
 
-fun Scanner.parseInnerExpr(): Expr.Atom.IntExpr {
+fun Scanner.parseInnerExpr(): Atom.IntExpr {
     TODO()
 }
 

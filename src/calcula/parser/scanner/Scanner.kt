@@ -1,9 +1,9 @@
-package calcula.scanner
+package calcula.parser.scanner
 
-import calcula.scanner.Token.*
-import calcula.scanner.Token.CompOpr.*
-import calcula.scanner.Token.FactorOpr.*
-import calcula.scanner.Token.TermOpr.*
+import calcula.parser.scanner.Token.*
+import calcula.parser.scanner.Token.CompOpr.*
+import calcula.parser.scanner.Token.FactorOpr.*
+import calcula.parser.scanner.Token.TermOpr.*
 import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
