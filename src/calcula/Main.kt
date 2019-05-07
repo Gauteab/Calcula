@@ -1,12 +1,10 @@
 package calcula
 
-import calcula.Ast.Expr
 import calcula.Ast.Expr.Atom.IntExpr
 import calcula.Ast.Expr.BinExp
 import calcula.parser.Parser
 import calcula.parser.scanner.Scanner
-
-var LOG = true
+import calcula.parser.scanner.Token.*
 
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
@@ -14,28 +12,20 @@ fun main(args: Array<String>) {
 }
 
 fun testParser(filename: String) {
-    val sc = Scanner(filename)
-    val parser = Parser(sc)
-    val e = parser.expr()
-    println(e)
+    val e = Parser(filename).expr()
     tree(e)
 }
 
-val h = "\u2500"
-val v = "\u2502"
-
-fun tree(e: Expr, indent: Int = 0) {
-    //print(" ".repeat(indent))
-    //print("\u2500".repeat(2))
+fun tree(ast: Ast, indent: Int = 0) {
     print("  ".repeat(indent))
-    print(v)
-    print(h.repeat(2))
-    when (e) {
-        is IntExpr -> println(e.value)
+    print("\u2502")
+    print("\u2500".repeat(2))
+    return when (ast) {
+        is IntExpr -> println(ast.value)
         is BinExp  -> {
-            println(e.opr)
-            tree(e.e1, indent+1)
-            tree(e.e2, indent+1)
+            println(ast.opr)
+            tree(ast.e1, indent+1)
+            tree(ast.e2, indent+1)
         }
     }
 }
@@ -57,20 +47,13 @@ fun tree(e: Expr, indent: Int = 0) {
     data("format", "db", "\"%d\", 10, 0")
     println(this)
 }
-
-fun testParser(filename: String) {
-    LOG = true
-    val e: Ast.Expr = Scanner(filename).parseExpr()
-    LOG = false
-    println(e)
-    println()
-}
+*/
 
 fun testScanner(filename: String) {
     val s = Scanner(filename)
     while (true) {
         val t = s.nextToken()
         println(t)
-        if (t == Token.Eof) break
+        if (t == Eof) break
     }
-}*/
+}

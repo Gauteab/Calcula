@@ -8,55 +8,59 @@ import calcula.parser.scanner.Token
 import calcula.parser.scanner.Token.*
 import kotlin.system.exitProcess
 
-class Parser(val sc: Scanner, val log: Boolean = false) {
+class Parser(val sc: Scanner) {
+
+    constructor(filename: String) : this(Scanner(filename))
 
     fun curToken()  = sc.curToken()
     fun nextToken() = sc.nextToken()
 
-    fun expr(): Expr = log("expr") {
-        or()
-    }
+    // Binary expression
+    fun <T: Token> binExpr(f: () -> Expr, clazz: Class<out T>): Expr {
 
-    fun <T: Token> binExpr(f: () -> Expr, clazz: Class<out T>): Expr = log(clazz.simpleName) {
-
-        fun opr(clazz: Class<out Token>): Token = log(clazz.simpleName) {
+        fun opr(clazz: Class<out Token>): Token {
             val token = nextToken()
             if (!clazz.isInstance(token)) expectedError(clazz.simpleName, token)
-            token
+            return token
         }
 
         val e = f()
         if (!clazz.isInstance(curToken())) { return e }
-        BinExp(e, opr(clazz), binExpr(f, clazz))
+        return BinExp(e, opr(clazz), binExpr(f, clazz))
     }
 
-    fun factor() = binExpr(::atom,   FactorOpr::class.java)
-    fun term()   = binExpr(::factor, TermOpr::class.java)
-    fun comp()   = binExpr(::term,   CompOpr::class.java)
-    fun and()    = binExpr(::comp,   And::class.java)
-    fun or()     = binExpr(::and,    Or::class.java)
+
+    // Expr with precedence parsing
+    fun expr(): Expr = or()
+    fun factor()     = binExpr(::atom,   FactorOpr::class.java)
+    fun term()       = binExpr(::factor, TermOpr::class.java)
+    fun comp()       = binExpr(::term,   CompOpr::class.java)
+    fun and()        = binExpr(::comp,   And::class.java)
+    fun or()         = binExpr(::and,    Or::class.java)
 
 
-    fun atom(): Expr = log("atom") {
-        when (curToken()) {
-            is IntLit  -> int()
-            is LeftPar -> innerExpr()
-            else       -> expectedError("Atom", curToken())
-        }
+    fun atom(): Expr = when (curToken()) {
+        is IntLit  -> int()
+        is LeftPar -> innerExpr()
+        else       -> expectedError("Atom", curToken())
     }
 
-    fun innerExpr(): Expr = log("inner-expr") {
+    fun innerExpr(): Expr {
         sc.skip(LeftPar)
         val e = expr()
         sc.skip(RightPar)
-        e
+        return e
     }
 
-    fun int(): IntExpr = log("int") {
+    fun int(): IntExpr {
         val token = nextToken()
         require(token is IntLit)
-        IntExpr(token.value)
+        return IntExpr(token.value)
     }
+
+    /**
+     * Helpers
+     */
 
     fun Scanner.skip(token: Token) {
         if (curToken() != token) expectedError(token.toString(), curToken().toString())
@@ -70,22 +74,17 @@ class Parser(val sc: Scanner, val log: Boolean = false) {
         nextToken()
     }
 
-    var indent = 0
-    inline fun <reified T> log(name: String = T::class.simpleName ?: "<T::class.simpleName>", block: () -> T): T {
-        if (!log) return block()
-        println("${"   ".repeat(indent++)}<$name>")
-        val t = block()
-        println("${"   ".repeat(--indent)}</$name>")
-        return t
-    }
+    /**
+     * Errors
+     */
 
     fun parseError(msg: String): Nothing {
         println("Parse Error: $msg")
         exitProcess(-1)
     }
 
-    fun expectedError(expected: String, actual: Token): Nothing =
-        expectedError(expected, actual.toString())
-    fun expectedError(expected: String, actual: String): Nothing =
-        parseError("Expected `$expected`, but found `$actual`")
+    fun expectedError(expected: String, actual: Token): Nothing = expectedError(expected, actual.toString())
+
+    fun expectedError(expected: String, actual: String): Nothing = parseError("Expected `$expected`, but found `$actual`")
+
 }

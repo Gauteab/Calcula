@@ -37,7 +37,6 @@ class Scanner(filename: String) {
                 ' ' ,
                 '\t',
                 '\r' -> null     to 1
-                //'\n' -> Newline to 1
                 '+'  -> Plus     to 1
                 '-'  -> Minus    to 1
                 '*'  -> Mult     to 1
