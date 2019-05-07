@@ -23,6 +23,10 @@ sealed class Token {
         object Gt : CompOpr()
     }
 
+    object And : Token()
+    object Or  : Token()
+    object Not : Token()
+
     // Symbols
     object LeftPar  : Token()
     object RightPar : Token()

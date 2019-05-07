@@ -14,7 +14,7 @@ class Parser(val sc: Scanner, val log: Boolean = false) {
     fun nextToken() = sc.nextToken()
 
     fun expr(): Expr = log("expr") {
-        comp()
+        or()
     }
 
     fun <T: Token> binExpr(f: () -> Expr, clazz: Class<out T>): Expr = log(clazz.simpleName) {
@@ -33,6 +33,8 @@ class Parser(val sc: Scanner, val log: Boolean = false) {
     fun factor() = binExpr(::atom,   FactorOpr::class.java)
     fun term()   = binExpr(::factor, TermOpr::class.java)
     fun comp()   = binExpr(::term,   CompOpr::class.java)
+    fun and()    = binExpr(::comp,   And::class.java)
+    fun or()     = binExpr(::and,    Or::class.java)
 
 
     fun atom(): Expr = log("atom") {

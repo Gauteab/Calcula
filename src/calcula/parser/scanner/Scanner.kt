@@ -47,6 +47,9 @@ class Scanner(filename: String) {
                 '<'  -> Lt       to 1
                 '('  -> LeftPar  to 1
                 ')'  -> RightPar to 1
+                '&'  -> And      to 1
+                '|'  -> Or       to 1
+                '!'  -> Not      to 1
                 in '0' .. '9' -> scanIntLit(s, i)
                 else          -> scannerError("Unrecognized Symbol: ${s[i]}")
             }
