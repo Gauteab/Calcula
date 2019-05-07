@@ -2,7 +2,6 @@ package calcula.parser
 
 import calcula.Ast.Expr
 import calcula.Ast.Expr.*
-import calcula.Ast.Expr.Atom.*
 import calcula.parser.scanner.Scanner
 import calcula.parser.scanner.Token
 import calcula.parser.scanner.Token.*
@@ -12,31 +11,31 @@ class Parser(val sc: Scanner) {
 
     constructor(filename: String) : this(Scanner(filename))
 
-    fun curToken()  = sc.curToken()
-    fun nextToken() = sc.nextToken()
+    private fun curToken()  = sc.curToken()
+    private fun nextToken() = sc.nextToken()
 
     // Binary expression
-    fun <T: Token> binExpr(f: () -> Expr, clazz: Class<out T>): Expr {
+    fun binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
 
-        fun opr(clazz: Class<out Token>): Token {
+        fun opr(isValidOperator: (Token) -> Boolean): Token {
             val token = nextToken()
-            if (!clazz.isInstance(token)) expectedError(clazz.simpleName, token)
+            if (!isValidOperator(token)) expectedError("Some Operator (TODO: Better error message)", token)
             return token
         }
 
         val e = f()
-        if (!clazz.isInstance(curToken())) { return e }
-        return BinExp(e, opr(clazz), binExpr(f, clazz))
+        if (!isValidOperator(curToken())) { return e }
+        return BinExp(e, opr(isValidOperator), binExpr(f, isValidOperator))
     }
 
 
     // Expr with precedence parsing
     fun expr(): Expr = or()
-    fun factor()     = binExpr(::atom,   FactorOpr::class.java)
-    fun term()       = binExpr(::factor, TermOpr::class.java)
-    fun comp()       = binExpr(::term,   CompOpr::class.java)
-    fun and()        = binExpr(::comp,   And::class.java)
-    fun or()         = binExpr(::and,    Or::class.java)
+    fun factor()     = binExpr(::atom)   { it is FactorOpr }
+    fun term()       = binExpr(::factor) { it is TermOpr   }
+    fun comp()       = binExpr(::term)   { it is CompOpr   }
+    fun and()        = binExpr(::comp)   { it is And       }
+    fun or()         = binExpr(::and)    { it is Or        }
 
 
     fun atom(): Expr = when (curToken()) {
@@ -64,13 +63,6 @@ class Parser(val sc: Scanner) {
 
     fun Scanner.skip(token: Token) {
         if (curToken() != token) expectedError(token.toString(), curToken().toString())
-        nextToken()
-    }
-
-    fun Scanner.skip(token1: Token, token2: Token) {
-        val curToken = curToken()
-        if (curToken != token1 && curToken != token2)
-            expectedError("{$token1, $token2}", curToken.toString())
         nextToken()
     }
 

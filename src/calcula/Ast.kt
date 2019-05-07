@@ -1,5 +1,7 @@
 package calcula
 
+import calcula.Ast.Expr.BinExp
+import calcula.Ast.Expr.IntExpr
 import calcula.parser.scanner.Token
 
 sealed class Ast {
@@ -7,9 +9,24 @@ sealed class Ast {
     sealed class Expr : Ast() {
 
         data class BinExp(val e1: Expr, val opr: Token, val e2: Expr) : Expr()
+        data class IntExpr(val value: Int) : Expr()
+    }
 
-        sealed class Atom : Expr() {
-            data class IntExpr(val value: Int) : Atom()
+    /**
+     * Prints the AST to the console
+     */
+    fun print() = printTree(this, 0)
+    private fun printTree(ast: Ast, indent: Int) {
+        print("  ".repeat(indent))
+        print("\u2502")
+        print("\u2500".repeat(2))
+        return when (ast) {
+            is IntExpr -> println(ast.value)
+            is BinExp -> {
+                println(ast.opr)
+                printTree(ast.e1, indent+1)
+                printTree(ast.e2, indent+1)
+            }
         }
     }
 }
