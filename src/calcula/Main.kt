@@ -1,20 +1,46 @@
 package calcula
 
-import calcula.compiler.Asm
-import calcula.compiler.compile
-import calcula.parser.parseExpr
+import calcula.Ast.Expr
+import calcula.Ast.Expr.Atom.IntExpr
+import calcula.Ast.Expr.BinExp
+import calcula.parser.Parser
 import calcula.parser.scanner.Scanner
-import calcula.parser.scanner.Token
 
-var LOG = false
+var LOG = true
 
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
-    //testParser(filename)
-    testCompiler(filename)
+    testParser(filename)
 }
 
-fun testCompiler(filename: String) = Asm().run {
+fun testParser(filename: String) {
+    val sc = Scanner(filename)
+    val parser = Parser(sc)
+    val e = parser.expr()
+    println(e)
+    tree(e)
+}
+
+val h = "\u2500"
+val v = "\u2502"
+
+fun tree(e: Expr, indent: Int = 0) {
+    //print(" ".repeat(indent))
+    //print("\u2500".repeat(2))
+    print("  ".repeat(indent))
+    print(v)
+    print(h.repeat(2))
+    when (e) {
+        is IntExpr -> println(e.value)
+        is BinExp  -> {
+            println(e.opr)
+            tree(e.e1, indent+1)
+            tree(e.e2, indent+1)
+        }
+    }
+}
+
+/*fun testCompiler(filename: String) = Asm().run {
     global("main")
     extern("printf")
     section("text")
@@ -47,4 +73,4 @@ fun testScanner(filename: String) {
         println(t)
         if (t == Token.Eof) break
     }
-}
+}*/
