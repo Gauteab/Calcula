@@ -1,7 +1,7 @@
 package calcula.parser
 
-import calcula.Ast.Expr
-import calcula.Ast.Expr.*
+import calcula.Expr
+import calcula.Expr.*
 import calcula.parser.scanner.Scanner
 import calcula.parser.scanner.Token
 import calcula.parser.scanner.Token.*
@@ -26,9 +26,14 @@ fun Scanner.binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
     return collect(es, os)
 }
 
-
 // Expr with precedence parsing
-fun Scanner.expr(): Expr = or()
+fun Scanner.expr(): Expr = or().also {
+    // Check that the scanner is finished
+    var t = nextToken()
+    while (t == Newline) { t = nextToken() }
+    if (t != Eof) parseError("Unexpected token: $t")
+}
+
 fun Scanner.or()         = binExpr(::and)     { it is Or         }
 fun Scanner.and()        = binExpr(::comp)    { it is And        }
 fun Scanner.comp()       = binExpr(::term,    Token::isCompOpr   )
@@ -74,7 +79,7 @@ fun Scanner.skip(token: Token) {
  */
 
 fun parseError(msg: String): Nothing {
-    println("Parse Error: $msg")
+    println("Parse Error!\n$msg")
     exitProcess(-1)
 }
 

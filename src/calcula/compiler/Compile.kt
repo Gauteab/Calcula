@@ -1,7 +1,7 @@
 package calcula.compiler
 
-import calcula.Ast.Expr
-import calcula.Ast.Expr.*
+import calcula.Expr
+import calcula.Expr.*
 import calcula.parser.scanner.Token.*
 import kotlin.system.exitProcess
 
