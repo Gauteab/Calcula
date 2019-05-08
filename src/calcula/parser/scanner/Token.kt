@@ -1,37 +1,36 @@
 package calcula.parser.scanner
 
-sealed class Token {
+sealed class Token(val image: String? = null) {
 
     // Literals
-    data class IntLit(val value: Int) : Token()
+    data class IntLit(val value: Int) : Token("Int")
     //class BoolLit(val value: Boolean) : Token()
 
     // Operators
-    sealed class TermOpr : Token() {
-        object Plus  : TermOpr()
-        object Minus : TermOpr()
-    }
+    object Plus  : Token("+")
+    object Minus : Token("-")
 
-    sealed class FactorOpr : Token() {
-        object Mult  : FactorOpr()
-        object Div   : FactorOpr()
-    }
+    object Mult  : Token("*")
+    object Div   : Token("/")
 
-    sealed class CompOpr : Token() {
-        object Eq : CompOpr()
-        object Lt : CompOpr()
-        object Gt : CompOpr()
-    }
+    object Eq    : Token("=")
+    object Lt    : Token("<")
+    object Gt    : Token(">")
 
-    object And : Token()
-    object Or  : Token()
-    object Not : Token()
+    object And   : Token("&")
+    object Or    : Token("|")
+    object Not   : Token("!")
 
     // Symbols
-    object LeftPar  : Token()
-    object RightPar : Token()
+    object LeftPar  : Token("(")
+    object RightPar : Token(")")
     object Eof      : Token()
     object Newline  : Token()
 
-    override fun toString() = this::class.simpleName.toString()
+    override fun toString() = image ?: this::class.simpleName.toString()
+
+    fun isCompOpr()   = this in arrayOf(Eq, Lt, Gt)
+    fun isTermOpr()   = this in arrayOf(Plus, Minus)
+    fun isFactorOpr() = this in arrayOf(Mult, Div)
+    fun isUnaryOpr()  = this in arrayOf(Not, Minus)
 }

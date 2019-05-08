@@ -3,9 +3,6 @@ package calcula.compiler
 import calcula.Ast.Expr
 import calcula.Ast.Expr.*
 import calcula.parser.scanner.Token.*
-import calcula.parser.scanner.Token.CompOpr.*
-import calcula.parser.scanner.Token.FactorOpr.*
-import calcula.parser.scanner.Token.TermOpr.*
 import kotlin.system.exitProcess
 
 fun Asm.flagIntoRax(flag: Int) = run {

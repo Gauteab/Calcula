@@ -36,11 +36,11 @@ class Parser(val sc: Scanner) {
 
     // Expr with precedence parsing
     fun expr(): Expr = or()
-    fun or()         = binExpr(::and)    { it is Or        }
-    fun and()        = binExpr(::comp)   { it is And       }
-    fun comp()       = binExpr(::term)   { it is CompOpr   }
-    fun term()       = binExpr(::factor) { it is TermOpr   }
-    fun factor()     = binExpr(::atom)   { it is FactorOpr }
+    fun or()         = binExpr(::and)    { it is Or         }
+    fun and()        = binExpr(::comp)   { it is And        }
+    fun comp()       = binExpr(::term,   Token::isCompOpr   )
+    fun term()       = binExpr(::factor, Token::isTermOpr   )
+    fun factor()     = binExpr(::atom,   Token::isFactorOpr )
 
 
     fun atom(): Expr = when (curToken()) {

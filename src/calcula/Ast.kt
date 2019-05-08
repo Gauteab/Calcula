@@ -20,6 +20,7 @@ sealed class Ast {
         print("  ".repeat(indent))
         print("\u2502")
         print("\u2500".repeat(2))
+        print(" ")
         return when (ast) {
             is IntExpr -> println(ast.value)
             is BinExp -> {
