@@ -1,19 +1,32 @@
 package calcula
 
-import calcula.parser.scanner.Token.*
+import calcula.Ast.Expr.BinExp
+import calcula.Ast.Expr.IntExpr
+import calcula.parser.scanner.Token
 
 sealed class Ast {
 
     sealed class Expr : Ast() {
 
-        data class Comparison(val terms: List<Term>, val oprs: List<CompOpr>) : Expr()
-        data class Term(val factors: List<Factor>, val oprs: List<TermOpr>)   : Expr()
-        data class Factor(val atoms: List<Atom>, val oprs: List<FactorOpr>)   : Expr()
+        data class BinExp(val left: Expr, val opr: Token, val right: Expr) : Expr()
+        data class IntExpr(val value: Int) : Expr()
+    }
 
-        sealed class Atom : Expr() {
-            data class IntExpr(val value: Int)      : Atom()
-            data class BoolExpr(val value: Boolean) : Atom()
-            data class InnerExpr(val expr: Expr)    : Atom()
+    /**
+     * Prints the AST to the console
+     */
+    fun print() = printTree(this, 0)
+    private fun printTree(ast: Ast, indent: Int) {
+        print("  ".repeat(indent))
+        print("\u2502")
+        print("\u2500".repeat(2))
+        return when (ast) {
+            is IntExpr -> println(ast.value)
+            is BinExp -> {
+                println(ast.opr)
+                printTree(ast.left, indent+1)
+                printTree(ast.right, indent+1)
+            }
         }
     }
 }

@@ -22,6 +22,7 @@ class Asm {
     fun pushf()                      = +"  pushf"
     fun shr(s1: String, s2: String)  = +"  shr  $s1, $s2"
     fun and(s1: String, s2: String)  = +"  and  $s1, $s2"
+    fun or(s1: String, s2: String)   = +"  or   $s1, $s2"
     fun raw(s: String)               = +s
     fun label(name: String)          = +"$name:"
     fun global(name: String)         = +"  global $name"
@@ -32,9 +33,8 @@ class Asm {
 
     fun nl()                         = +""
 
-    operator fun String.unaryPlus() = this@Asm + this
-    operator fun plus(s: String)    = also { this += s      }
-    operator fun plusAssign(s: String)     { sb.appendln(s) }
+    operator fun String.unaryPlus()     = plusAssign(this)
+    operator fun plusAssign(s: String)  { sb.appendln(s) }
 
     override fun toString() = sb.toString()
 

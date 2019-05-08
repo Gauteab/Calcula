@@ -2,11 +2,8 @@ package calcula
 
 import calcula.compiler.Asm
 import calcula.compiler.compile
-import calcula.parser.parseExpr
+import calcula.parser.Parser
 import calcula.parser.scanner.Scanner
-import calcula.parser.scanner.Token
-
-var LOG = false
 
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
@@ -14,12 +11,17 @@ fun main(args: Array<String>) {
     testCompiler(filename)
 }
 
+fun testParser(filename: String) =
+    Parser(filename)
+    .expr()
+    .print()
+
 fun testCompiler(filename: String) = Asm().run {
     global("main")
     extern("printf")
     section("text")
     label("main")
-    Scanner(filename).parseExpr().compile(this)
+    compile(Parser(Scanner(filename)).expr())
     nl()
     mov("rdi", "format")
     mov("rsi", "rax")
@@ -32,19 +34,3 @@ fun testCompiler(filename: String) = Asm().run {
     println(this)
 }
 
-fun testParser(filename: String) {
-    LOG = true
-    val e: Ast.Expr = Scanner(filename).parseExpr()
-    LOG = false
-    println(e)
-    println()
-}
-
-fun testScanner(filename: String) {
-    val s = Scanner(filename)
-    while (true) {
-        val t = s.nextToken()
-        println(t)
-        if (t == Token.Eof) break
-    }
-}
