@@ -2,7 +2,7 @@ package calcula
 
 import calcula.compiler.Asm
 import calcula.compiler.compile
-import calcula.parser.Parser
+import calcula.parser.expr
 import calcula.parser.scanner.Scanner
 
 fun main(args: Array<String>) {
@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 }
 
 fun testParser(filename: String) =
-    Parser(filename)
+    Scanner(filename)
     .expr()
     .print()
 
@@ -21,7 +21,7 @@ fun testCompiler(filename: String) = Asm().run {
     extern("printf")
     section("text")
     label("main")
-    compile(Parser(Scanner(filename)).expr())
+    compile(Scanner(filename).expr())
     nl()
     mov("rdi", "format")
     mov("rsi", "rax")

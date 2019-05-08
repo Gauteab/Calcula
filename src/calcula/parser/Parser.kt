@@ -7,81 +7,73 @@ import calcula.parser.scanner.Token
 import calcula.parser.scanner.Token.*
 import kotlin.system.exitProcess
 
-class Parser(val sc: Scanner) {
+// Binary expression
+fun Scanner.binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
 
-    constructor(filename: String) : this(Scanner(filename))
+    fun Scanner.collect(es: List<Expr>, os: List<Token>): Expr =
+        if (os.isEmpty()) es[0]
+        else              BinExp(es.last(), os.last(), collect(es.dropLast(1), os.dropLast(1)))
 
-    private fun curToken()  = sc.curToken()
-    private fun nextToken() = sc.nextToken()
+    val es = mutableListOf<Expr>(f())
+    val os = mutableListOf<Token>()
 
-    // Binary expression
-    fun binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
-
-        fun collect(es: List<Expr>, os: List<Token>): Expr =
-            if (os.isEmpty()) es[0]
-            else              BinExp(es.last(), os.last(), collect(es.dropLast(1), os.dropLast(1)))
-
-        val es = mutableListOf<Expr>(f())
-        val os = mutableListOf<Token>()
-
-        while (true) {
-            os += curToken().takeIf(isValidOperator) ?: break
-            nextToken()
-            es += f()
-        }
-
-        return collect(es, os)
-    }
-
-
-    // Expr with precedence parsing
-    fun expr(): Expr = or()
-    fun or()         = binExpr(::and)    { it is Or         }
-    fun and()        = binExpr(::comp)   { it is And        }
-    fun comp()       = binExpr(::term,   Token::isCompOpr   )
-    fun term()       = binExpr(::factor, Token::isTermOpr   )
-    fun factor()     = binExpr(::atom,   Token::isFactorOpr )
-
-
-    fun atom(): Expr = when (curToken()) {
-        is IntLit  -> int()
-        is LeftPar -> innerExpr()
-        else       -> expectedError("Atom", curToken())
-    }
-
-    fun innerExpr(): Expr {
-        sc.skip(LeftPar)
-        val e = expr()
-        sc.skip(RightPar)
-        return e
-    }
-
-    fun int(): IntExpr {
-        val token = nextToken()
-        require(token is IntLit)
-        return IntExpr(token.value)
-    }
-
-    /**
-     * Helpers
-     */
-
-    fun Scanner.skip(token: Token) {
-        if (curToken() != token) expectedError(token.toString(), curToken().toString())
+    while (true) {
+        os += curToken().takeIf(isValidOperator) ?: break
         nextToken()
+        es += f()
     }
 
-    /**
-     * Errors
-     */
-
-    fun parseError(msg: String): Nothing {
-        println("Parse Error: $msg")
-        exitProcess(-1)
-    }
-
-    fun expectedError(expected: String, actual: Token): Nothing = expectedError(expected, actual.toString())
-
-    fun expectedError(expected: String, actual: String): Nothing = parseError("Expected `$expected`, but found `$actual`")
-
+    return collect(es, os)
 }
+
+
+// Expr with precedence parsing
+fun Scanner.expr(): Expr = or()
+fun Scanner.or()         = binExpr(::and)    { it is Or         }
+fun Scanner.and()        = binExpr(::comp)   { it is And        }
+fun Scanner.comp()       = binExpr(::term,   Token::isCompOpr   )
+fun Scanner.term()       = binExpr(::factor, Token::isTermOpr   )
+fun Scanner.factor()     = binExpr(::atom,   Token::isFactorOpr )
+
+
+fun Scanner.atom(): Expr = when (curToken()) {
+    is IntLit  -> int()
+    is LeftPar -> innerExpr()
+    else       -> expectedError("Atom", curToken())
+}
+
+fun Scanner.innerExpr(): Expr {
+    skip(LeftPar)
+    val e = expr()
+    skip(RightPar)
+    return e
+}
+
+fun Scanner.int(): IntExpr {
+    val token = nextToken()
+    require(token is IntLit)
+    return IntExpr(token.value)
+}
+
+/**
+ * Helpers
+ */
+
+fun Scanner.skip(token: Token) {
+    if (curToken() != token) expectedError(token.toString(), curToken().toString())
+    nextToken()
+}
+
+/**
+ * Errors
+ */
+
+fun parseError(msg: String): Nothing {
+    println("Parse Error: $msg")
+    exitProcess(-1)
+}
+
+fun expectedError(expected: String, actual: Token): Nothing = expectedError(expected, actual.toString())
+
+fun expectedError(expected: String, actual: String): Nothing = parseError("Expected `$expected`, but found `$actual`")
+
