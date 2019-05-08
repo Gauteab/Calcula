@@ -17,25 +17,30 @@ class Parser(val sc: Scanner) {
     // Binary expression
     fun binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
 
-        fun opr(isValidOperator: (Token) -> Boolean): Token {
-            val token = nextToken()
-            if (!isValidOperator(token)) expectedError("Some Operator (TODO: Better error message)", token)
-            return token
+        fun collect(es: List<Expr>, os: List<Token>): Expr =
+            if (os.isEmpty()) es[0]
+            else              BinExp(es.last(), os.last(), collect(es.dropLast(1), os.dropLast(1)))
+
+        val es = mutableListOf<Expr>(f())
+        val os = mutableListOf<Token>()
+
+        while (true) {
+            os += curToken().takeIf(isValidOperator) ?: break
+            nextToken()
+            es += f()
         }
 
-        val e = f()
-        if (!isValidOperator(curToken())) { return e }
-        return BinExp(e, opr(isValidOperator), binExpr(f, isValidOperator))
+        return collect(es, os)
     }
 
 
     // Expr with precedence parsing
     fun expr(): Expr = or()
-    fun factor()     = binExpr(::atom)   { it is FactorOpr }
-    fun term()       = binExpr(::factor) { it is TermOpr   }
-    fun comp()       = binExpr(::term)   { it is CompOpr   }
-    fun and()        = binExpr(::comp)   { it is And       }
     fun or()         = binExpr(::and)    { it is Or        }
+    fun and()        = binExpr(::comp)   { it is And       }
+    fun comp()       = binExpr(::term)   { it is CompOpr   }
+    fun term()       = binExpr(::factor) { it is TermOpr   }
+    fun factor()     = binExpr(::atom)   { it is FactorOpr }
 
 
     fun atom(): Expr = when (curToken()) {

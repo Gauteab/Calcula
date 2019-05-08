@@ -1,10 +1,14 @@
 package calcula
 
+import calcula.compiler.Asm
+import calcula.compiler.compile
 import calcula.parser.Parser
+import calcula.parser.scanner.Scanner
 
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
-    testParser(filename)
+    //testParser(filename)
+    testCompiler(filename)
 }
 
 fun testParser(filename: String) =
@@ -12,12 +16,12 @@ fun testParser(filename: String) =
     .expr()
     .print()
 
-/*fun testCompiler(filename: String) = Asm().run {
+fun testCompiler(filename: String) = Asm().run {
     global("main")
     extern("printf")
     section("text")
     label("main")
-    Scanner(filename).parseExpr().compile(this)
+    Parser(Scanner(filename)).expr().compile(this)
     nl()
     mov("rdi", "format")
     mov("rsi", "rax")
@@ -29,5 +33,4 @@ fun testParser(filename: String) =
     data("format", "db", "\"%d\", 10, 0")
     println(this)
 }
-*/
 
