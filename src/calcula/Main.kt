@@ -7,8 +7,8 @@ import calcula.parser.scanner.Scanner
 
 fun main(args: Array<String>) {
     val filename = args.firstOrNull() ?: "calc/mini.cal"
-    //testParser(filename)
-    testCompiler(filename)
+    testParser(filename)
+    //testCompiler(filename)
 }
 
 fun testParser(filename: String) =

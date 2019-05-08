@@ -29,12 +29,17 @@ fun Scanner.binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
 
 // Expr with precedence parsing
 fun Scanner.expr(): Expr = or()
-fun Scanner.or()         = binExpr(::and)    { it is Or         }
-fun Scanner.and()        = binExpr(::comp)   { it is And        }
-fun Scanner.comp()       = binExpr(::term,   Token::isCompOpr   )
-fun Scanner.term()       = binExpr(::factor, Token::isTermOpr   )
-fun Scanner.factor()     = binExpr(::atom,   Token::isFactorOpr )
+fun Scanner.or()         = binExpr(::and)     { it is Or         }
+fun Scanner.and()        = binExpr(::comp)    { it is And        }
+fun Scanner.comp()       = binExpr(::term,    Token::isCompOpr   )
+fun Scanner.term()       = binExpr(::factor,  Token::isTermOpr   )
+fun Scanner.factor()     = binExpr(::primary, Token::isFactorOpr )
 
+fun Scanner.primary(): Expr {
+    val opr = curToken().takeIf(Token::isUnaryOpr) ?: return atom()
+    nextToken()
+    return Primary(opr, primary())
+}
 
 fun Scanner.atom(): Expr = when (curToken()) {
     is IntLit  -> int()
