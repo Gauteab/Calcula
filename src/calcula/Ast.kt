@@ -8,7 +8,7 @@ sealed class Ast {
 
     sealed class Expr : Ast() {
 
-        data class BinExp(val e1: Expr, val opr: Token, val e2: Expr) : Expr()
+        data class BinExp(val left: Expr, val opr: Token, val right: Expr) : Expr()
         data class IntExpr(val value: Int) : Expr()
     }
 
@@ -24,8 +24,8 @@ sealed class Ast {
             is IntExpr -> println(ast.value)
             is BinExp -> {
                 println(ast.opr)
-                printTree(ast.e1, indent+1)
-                printTree(ast.e2, indent+1)
+                printTree(ast.left, indent+1)
+                printTree(ast.right, indent+1)
             }
         }
     }

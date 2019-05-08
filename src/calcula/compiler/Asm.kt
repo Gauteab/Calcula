@@ -33,9 +33,8 @@ class Asm {
 
     fun nl()                         = +""
 
-    operator fun String.unaryPlus() = this@Asm + this
-    operator fun plus(s: String)    = also { this += s      }
-    operator fun plusAssign(s: String)     { sb.appendln(s) }
+    operator fun String.unaryPlus()     = plusAssign(this)
+    operator fun plusAssign(s: String)  { sb.appendln(s) }
 
     override fun toString() = sb.toString()
 

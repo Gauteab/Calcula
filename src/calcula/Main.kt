@@ -21,7 +21,7 @@ fun testCompiler(filename: String) = Asm().run {
     extern("printf")
     section("text")
     label("main")
-    Parser(Scanner(filename)).expr().compile(this)
+    compile(Parser(Scanner(filename)).expr())
     nl()
     mov("rdi", "format")
     mov("rsi", "rax")
