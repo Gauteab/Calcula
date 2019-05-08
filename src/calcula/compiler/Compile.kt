@@ -15,7 +15,16 @@ fun Asm.flagIntoRax(flag: Int) = run {
 fun Asm.compile(e: Expr): Any = when (e) {
     is BinExp  -> compile(e)
     is IntExpr -> mov("rax", "${e.value}")
-    is Primary -> TODO()
+    is Primary -> compile(e)
+}
+
+fun Asm.compile(p: Primary) {
+    compile(p.e)
+    when (p.opr) {
+        null  -> return
+        Minus -> neg("rax")
+        Not   -> xor("rax", "1")
+    }
 }
 
 fun Asm.compile(e: BinExp) {

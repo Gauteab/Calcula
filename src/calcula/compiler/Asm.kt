@@ -17,6 +17,7 @@ class Asm {
     fun add (s1: String, s2: String) = +"  add  $s1, $s2"
     fun xor (s: String)              = +"  xor  $s, $s"
     fun xor (s1: String, s2: String) = +"  xor  $s1, $s2"
+    fun neg(s: String)               = +"  neg  $s"
     fun sub (s1: String, s2: String) = +"  sub  $s1, $s2"
     fun cmp(s1: String, s2: String)  = +"  cmp  $s1, $s2"
     fun pushf()                      = +"  pushf"
