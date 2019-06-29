@@ -13,9 +13,10 @@ fun Asm.flagIntoRax(flag: Int) = run {
 }
 
 fun Asm.compile(e: Expr): Any = when (e) {
-    is BinExp  -> compile(e)
-    is IntExpr -> mov("rax", "${e.value}")
-    is Primary -> compile(e)
+    is BinExp   -> compile(e)
+    is BoolExpr -> mov("rax", if (e.value) "1" else "0")
+    is IntExpr  -> mov("rax", "${e.value}")
+    is Primary  -> compile(e)
 }
 
 fun Asm.compile(p: Primary) {
@@ -43,7 +44,6 @@ fun Asm.compile(e: BinExp) {
         Eq    -> { cmp("rcx", "rax"); flagIntoRax(6) }
         Lt    -> { cmp("rcx", "rax"); flagIntoRax(7) }
         Gt    -> { cmp("rax", "rcx"); flagIntoRax(7) }
-        //Not   -> TODO: Implement unary operators
         else -> compileError("Unsupported binary operator: ${e.opr}")
     }
 }

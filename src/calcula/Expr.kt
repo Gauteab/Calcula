@@ -11,6 +11,7 @@ sealed class Expr {
     data class BinExp(val left: Expr, val opr: Token, val right: Expr) : Expr()
     data class Primary(val opr: Token?, val e: Expr) : Expr()
     data class IntExpr(val value: Int) : Expr()
+    data class BoolExpr(val value: Boolean) : Expr()
 
     /**
      * Prints the AST to the console
@@ -24,8 +25,9 @@ sealed class Expr {
             print(" ")
         }
         return when (e) {
-            is IntExpr -> println(e.value)
-            is BinExp -> {
+            is IntExpr  -> println(e.value)
+            is BoolExpr -> println(if (e.value) "T" else "F")
+            is BinExp   -> {
                 println(e.opr)
                 printTree(e.left, indent+1)
                 printTree(e.right, indent+1)

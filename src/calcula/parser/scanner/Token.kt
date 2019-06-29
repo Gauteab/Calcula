@@ -4,7 +4,7 @@ sealed class Token(val image: String? = null) {
 
     // Literals
     data class IntLit(val value: Int) : Token("Int")
-    //class BoolLit(val value: Boolean) : Token()
+    data class BoolLit(val value: Boolean) : Token("Bool")
 
     // Operators
     object Plus  : Token("+")

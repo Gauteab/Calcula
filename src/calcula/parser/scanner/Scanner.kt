@@ -33,19 +33,21 @@ class Scanner(filename: String) {
             val (token, offset) = when (s[i]) {
                 ' ' ,
                 '\t',
-                '\r' -> null     to 1
-                '+'  -> Plus     to 1
-                '-'  -> Minus    to 1
-                '*'  -> Mult     to 1
-                '/'  -> Div      to 1
-                '='  -> Eq       to 1
-                '>'  -> Gt       to 1
-                '<'  -> Lt       to 1
-                '('  -> LeftPar  to 1
-                ')'  -> RightPar to 1
-                '&'  -> And      to 1
-                '|'  -> Or       to 1
-                '!'  -> Not      to 1
+                '\r' -> null           to 1
+                '+'  -> Plus           to 1
+                '-'  -> Minus          to 1
+                '*'  -> Mult           to 1
+                '/'  -> Div            to 1
+                '='  -> Eq             to 1
+                '>'  -> Gt             to 1
+                '<'  -> Lt             to 1
+                '('  -> LeftPar        to 1
+                ')'  -> RightPar       to 1
+                '&'  -> And            to 1
+                '|'  -> Or             to 1
+                '!'  -> Not            to 1
+                'T'  -> BoolLit(true)  to 1
+                'F'  -> BoolLit(false) to 1
                 in '0' .. '9' -> scanIntLit(s, i)
                 else          -> scannerError("Unrecognized Symbol: ${s[i]}")
             }

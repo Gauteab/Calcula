@@ -12,7 +12,7 @@ fun Scanner.binExpr(f: () -> Expr, isValidOperator: (Token) -> Boolean): Expr {
 
     fun Scanner.collect(es: List<Expr>, os: List<Token>): Expr =
         if (os.isEmpty()) es[0]
-        else              BinExp(es.last(), os.last(), collect(es.dropLast(1), os.dropLast(1)))
+        else              BinExp(collect(es.dropLast(1), os.dropLast(1)), os.last(), es.last())
 
     val es = mutableListOf<Expr>(f())
     val os = mutableListOf<Token>()
@@ -48,6 +48,7 @@ fun Scanner.primary(): Expr {
 
 fun Scanner.atom(): Expr = when (curToken()) {
     is IntLit  -> int()
+    is BoolLit -> bool()
     is LeftPar -> innerExpr()
     else       -> expectedError("Atom", curToken())
 }
@@ -63,6 +64,12 @@ fun Scanner.int(): IntExpr {
     val token = nextToken()
     require(token is IntLit)
     return IntExpr(token.value)
+}
+
+fun Scanner.bool(): BoolExpr {
+    val token = nextToken()
+    require(token is BoolLit)
+    return BoolExpr(token.value)
 }
 
 /**
