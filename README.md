@@ -21,4 +21,4 @@ The frontend is a manually written recursive decent parser.
 The backend generates NASM assembly code. I have not implemented any proper register selection. Instead,
 it uses a simple two register push and pop technique that essentially emulates the behaviour of a stack machine.
 
-There is not optimization step, as the language only has literals, and would therefore make the code generation step trivial.
+There is no optimization step, as the language only has literals, and would therefore make the code generation step trivial.
